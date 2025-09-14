@@ -8,3 +8,7 @@
     - langgraph, -ai.agent 1.0, mcp, 2.0 
 - frontend(phone app): 
     - react-native, 
+
+
+## today 
+- backend , authentication,(FASTAPI)
