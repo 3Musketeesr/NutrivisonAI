@@ -1,0 +1,2 @@
+- start a react-native project, (has one page, : login , logout, create account), 
+- create datbase , 

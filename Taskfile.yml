@@ -1,0 +1,14 @@
+# https://taskfile.dev
+
+version: '3'
+
+tasks:
+  make_env:
+    cmds:
+      - python3 -m venv .venv 
+  
+  install:
+    cmds:
+      - .venv/bin/pip install -r requirements.txt
+
+
