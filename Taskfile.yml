@@ -9,6 +9,16 @@ tasks:
   
   install:
     cmds:
-      - .venv/bin/pip install -r requirements.txt
+      - .venv/bin/pip install -r ./backend/requirements.txt
+  
+  bring_up_all_services: 
+    cmds:
+      - docker compose up 
+  
+  bring_up_all_services_watch:
+    cmd: docker compose up --watch 
+  
+  bring_down_all_services: 
+    cmd: docker compose down --remove-orphans
 
 
