@@ -4,7 +4,7 @@ def _validate_email(email):
     msg = ""
     valid = False
     try:
-        valid = validate_email(email)
+        valid = validate_email(email, check_deliverability=False)
         email = valid.email
         valid = True
     except EmailNotValidError as e:

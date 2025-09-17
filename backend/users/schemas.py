@@ -24,12 +24,12 @@ class UserCreate(BaseModel):
         
         # Minimum length rule
         if len(v) < 8:
-            raise ValidationError("Password must be at least 8 characters long.")
+            raise ValueError("Password must be at least 8 characters long.")
         
         # Check strength with zxcvbn
         result = zxcvbn(v, user_inputs=[username])
         if result["score"] < 3:  # 0–4 scale
-            raise ValidationError("Password is too weak.")
+            raise ValueError("Password is too weak.")
         
         return v
     
@@ -39,15 +39,15 @@ class UserCreate(BaseModel):
             query = select(User).where(User.username == v)
             obj = session.exec(query).first()
             if obj: 
-                raise ValidationError("USER EXISTS!!")
+                raise ValueError("USER EXISTS!!")
             session.close() 
         return v 
     
     @field_validator("email")
-    def validate_password(cls,v:str,info:ValidationError) -> str: 
+    def validate_password(cls,v:str,info:ValidationInfo) -> str: 
         valid, msg, email= _validate_email(v)
         if not valid: 
-            raise ValidationError(f"EMAIL NOT VALID: {msg}")
+            raise ValueError(f"EMAIL NOT VALID: {msg}")
         return email
 
 

@@ -18,12 +18,12 @@ class PASSWORD_VALIDATOR():
     @staticmethod
     def verify_password(plain_password,user_name): 
         if len(plain_password) < 8:
-            raise ValidationError("Password must be at least 8 characters long.")
+            raise ValueError("Password must be at least 8 characters long.")
         
         # Check strength with zxcvbn
         result = zxcvbn.zxcvbn(plain_password, user_inputs=[user_name])
         if result["score"] < 3:  # 0–4 scale
-            raise ValidationError("Password is too weak.")
+            raise ValueError("Password is too weak.")
         
         return plain_password
     

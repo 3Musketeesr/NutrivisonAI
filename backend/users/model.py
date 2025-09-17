@@ -1,7 +1,6 @@
 from sqlmodel import Field, SQLModel, Session, select
 from backend.helpers import engine as b_engine
 from backend.users import validators, security
-from pydantic import ValidationError
 class User(SQLModel, table=True):
     __tablename__ = "user"
     id: int | None = Field(default=None, primary_key=True)
@@ -16,8 +15,8 @@ class User(SQLModel, table=True):
             obj = session.exec(query).first()
             if not obj:
                 valid, msg, email = validators._validate_email(email=email)
-                if not valid: 
-                    raise ValidationError(msg)
+                if not valid:
+                    raise ValueError(msg)
                 valid_psw = security.PASSWORD_VALIDATOR.verify_password(password,username)
                 hashed_psw = security.Hasher.get_password_hash(password=valid_psw)
                 obj = cls(username=username, password=hashed_psw, email=email)
