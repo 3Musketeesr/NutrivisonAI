@@ -3,6 +3,7 @@ from contextlib import asynccontextmanager
 from sqlmodel import SQLModel
 from backend.users.model import User
 from backend.helpers import engine as b_engine
+from backend.users.views import router as user_router 
 
 app = FastAPI()
 
@@ -12,7 +13,9 @@ async def lifespan(app: FastAPI):
     SQLModel.metadata.create_all(engine)
     yield
 
-app = FastAPI(lifespan=lifespan)
+app = FastAPI(lifespan=lifespan,redirect_slashes=True)
+
+app.include_router(user_router,prefix="/user")
 
 @app.get("/")
 async def testing():

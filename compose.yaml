@@ -10,6 +10,8 @@ services:
     
     develop:
       watch:
-        - path: ./backend/requirements.txt
-          action: rebuild
-        
+        - path: ./requirements.txt 
+          action: rebuild 
+        - path: ./backend/* 
+          action: rebuild 
+       

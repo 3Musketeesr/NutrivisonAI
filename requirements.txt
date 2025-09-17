@@ -4,3 +4,7 @@ sqlmodel
 pydantic
 pydantic-settings
 psycopg2-binary  # dont use psycopg2 with docker it will lead to errors :(
+requests
+email-validator
+passlib[bcrypt]
+zxcvbn

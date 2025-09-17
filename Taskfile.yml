@@ -1,24 +1,42 @@
-# https://taskfile.dev
-
 version: '3'
 
 tasks:
-  make_env:
+  venv:
+    desc: make venv
     cmds:
-      - python3 -m venv .venv 
-  
-  install:
+      - bash -lc 'printf "\e[34m[setup]\e[0m creating venv\n"'
+      - python3 -m venv .venv
+
+  deps:
+    desc: install deps
     cmds:
-      - .venv/bin/pip install -r ./backend/requirements.txt
-  
-  bring_up_all_services: 
+      - bash -lc 'printf "\e[34m[deps]\e[0m installing\n"'
+      - .venv/bin/pip install -r ./requirements.txt
+
+  up:
+    desc: start services
     cmds:
-      - docker compose up 
+      - bash -lc 'printf "\e[32m[up]\e[0m docker compose up\n"'
+      - docker compose up
+
+  up:watch:
+    desc: start and watch
+    cmd: |
+      bash -lc 'printf "\e[32m[up]\e[0m watch\n"; docker compose up --watch'
+
+  down:
+    desc: stop services
+    cmd: |
+      bash -lc 'printf "\e[33m[down]\e[0m stopping\n"; docker compose down --remove-orphans'
   
-  bring_up_all_services_watch:
-    cmd: docker compose up --watch 
-  
-  bring_down_all_services: 
-    cmd: docker compose down --remove-orphans
+  up-watch-build:
+    desc: start and watch and build
+    cmd: |
+      bash -lc 'printf "\e[32m[up]\e[0m watch and build\n"; docker compose up --watch --build'
+
+  clean:
+    desc: prune containers
+    cmd: |
+      bash -lc 'printf "\e[31m[clean]\e[0m pruning\n"; docker system prune -f'
 
 

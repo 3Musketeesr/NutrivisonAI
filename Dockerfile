@@ -7,7 +7,7 @@ RUN apt-get update && apt-get install -y build-essential gcc libffi-dev && rm -r
 
 COPY ./requirements.txt /tmp/requirements.txt
 
-RUN python3.13 -m venv /opt/.venv && \
+RUN python3 -m venv /opt/.venv && \
     /opt/.venv/bin/pip install --upgrade pip && \
     /opt/.venv/bin/pip install -r /tmp/requirements.txt
 
