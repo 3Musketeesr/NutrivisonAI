@@ -1,5 +1,6 @@
 import requests
-url = "http://0.0.0.0:8000/user/signup" 
+url = "http://0.0.0.0:8000/user/login" 
+
 
 
 data = {
@@ -8,6 +9,7 @@ data = {
     "password":"asjdfkjasldfjs", 
 }
 
-response = requests.post(url=url,json=data)
+
+response = requests.post(url=url,json=data,headers={"Content-Type":"application/json"})
 
 print(response.json()) 

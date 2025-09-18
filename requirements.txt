@@ -8,3 +8,4 @@ requests
 email-validator
 passlib[bcrypt]
 zxcvbn
+pyjwt

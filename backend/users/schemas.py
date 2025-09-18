@@ -1,3 +1,4 @@
+from dataclasses import field
 from fastapi import HTTPException
 from pydantic import BaseModel
 from pydantic import field_validator
@@ -7,10 +8,10 @@ from zxcvbn import zxcvbn
 from sqlmodel import select, Session
 from backend.helpers import engine as b_engine
 from backend.users.validators import _validate_email
-class LoginSchema(BaseModel):
-    username: str
-    password: str
 
+class UserLogin(BaseModel):
+    username: str 
+    password: str 
 
 class UserCreate(BaseModel):
     username: str
@@ -43,14 +44,6 @@ class UserCreate(BaseModel):
             session.close() 
         return v 
     
-    @field_validator("email")
-    def validate_password(cls,v:str,info:ValidationInfo) -> str: 
-        valid, msg, email= _validate_email(v)
-        if not valid: 
-            raise ValueError(f"EMAIL NOT VALID: {msg}")
-        return email
-
-
 
 class UserDetailSchema(BaseModel):
     username: str

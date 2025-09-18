@@ -1,32 +1,44 @@
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Request, Depends, HTTPException, status
 from pydantic import ValidationError
-from backend.users.schemas import UserDetailSchema, LoginSchema, UserCreate
+from backend.users.schemas import UserDetailSchema, UserCreate, UserLogin
 from backend.users.model import User
-router = APIRouter()
+from backend.users.auth import create_access_token, get_current_user
+from backend.users.decolators import login_required
 
-"""
-here i will need views for this, but they are just api routes they dont return website: 
-- a view to return user details : -> get request 
-- a view to login: -> post request, return the api token and use that token to log in   
-- a view to create account : -> post request, return a mesange respose of either succeful creation of account 
-or if there was an error  
-(for now ) 
-"""
+router = APIRouter()
 
 @router.post("/login")
 async def login_(request: Request):
     data = await request.json()
-    print(data)
-    return {"wow":"its working"}
+    try:
+        cleaned_data = UserLogin(**data)
+    except ValidationError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    try:
+        user = User.login_user(username=cleaned_data.username, password=cleaned_data.password)
+    except ValueError as e:
+        raise HTTPException(status_code=401, detail=str(e))
+    if user:
+        token = create_access_token({"sub": user.username})
+        return {"access_token": token, "token_type": "bearer"}
+    raise HTTPException(status_code=401, detail="user or password is wrong")
 
-
-@router.post("/signup") 
-async def signup_(request: Request): 
+@router.post("/signup")
+async def signup_(request: Request):
     data = await request.json()
-    cleaned_data =UserCreate(**data)
-    print(cleaned_data)
-    print(cleaned_data.model_dump_json())
-    User.create_user(username=cleaned_data.username, email=cleaned_data.email,password= cleaned_data.password)
+    try:
+        cleaned_data = UserCreate(**data)
+    except ValidationError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    try:
+        result = User.create_user(username=cleaned_data.username, email=cleaned_data.email, password=cleaned_data.password)
+        return {"details": "user created"}, status.HTTP_201_CREATED
+    except ValueError as e:
+        raise HTTPException(status_code=409, detail=str(e))
 
-
-    return {"hello":"world"}
+@router.get("/details")
+@login_required
+async def user_details(request: Request):
+    user = request.user
+    print(user)
+    return {"username": getattr(user, "username", None), "is_authenticated": getattr(user, "is_authenticated", False)}
