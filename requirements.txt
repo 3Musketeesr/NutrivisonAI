@@ -9,3 +9,8 @@ email-validator
 passlib[bcrypt]
 zxcvbn
 pyjwt
+langgraph
+langgraph-supervisor
+langchain
+#langchain-openai
+langchain-google-genai
