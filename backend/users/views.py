@@ -40,5 +40,9 @@ async def signup_(request: Request):
 @login_required
 async def user_details(request: Request):
     user = request.user
-    print(user)
     return {"username": getattr(user, "username", None), "is_authenticated": getattr(user, "is_authenticated", False)}
+
+@router.get("/query")
+@login_required
+async def query_(request:Request):
+    ... # i will finish this 
