@@ -47,3 +47,8 @@ class UserCreate(BaseModel):
 
 class UserDetailSchema(BaseModel):
     username: str
+
+
+
+class ChatMessagePayload(BaseModel):
+    message: str 

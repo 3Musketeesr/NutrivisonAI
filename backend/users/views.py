@@ -1,12 +1,15 @@
 from fastapi import APIRouter, Request, Depends, HTTPException, status
 from pydantic import ValidationError
-from backend.users.schemas import UserDetailSchema, UserCreate, UserLogin
+import uuid
+from backend.supervisor import get_supervisor
+from backend.users.schemas import UserDetailSchema, UserCreate, UserLogin, ChatMessagePayload
 from backend.users.model import User
 from backend.users.auth import create_access_token, get_current_user
 from backend.users.decolators import login_required
-
+from langgraph.checkpoint.memory import InMemorySaver
 router = APIRouter()
 
+checkpointer = InMemorySaver()
 @router.post("/login")
 async def login_(request: Request):
     data = await request.json()
@@ -42,7 +45,22 @@ async def user_details(request: Request):
     user = request.user
     return {"username": getattr(user, "username", None), "is_authenticated": getattr(user, "is_authenticated", False)}
 
-@router.get("/query")
+@router.post("/query")
 @login_required
-async def query_(request:Request):
-    ... # i will finish this 
+async def query_(request:Request,payload:ChatMessagePayload):
+    supe = get_supervisor(request, checkpointer=checkpointer)
+    thread_id = uuid.uuid4()
+    msg_data = {
+        "messages": [
+            {"role": "user",
+            "content": f"{payload.message}" 
+          },
+        ]
+    }
+    result = supe.invoke(msg_data, {"configurable": {"thread_id": thread_id}})
+    if not result:
+        raise HTTPException(status_code=400, detail="Error with supervisor")
+    messages = result.get("messages")
+    if not messages:
+        raise HTTPException(status_code=400, detail="Error with supervisor")
+    return messages[-1]
