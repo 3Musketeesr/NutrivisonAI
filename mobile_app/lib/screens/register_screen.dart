@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:mobile_app/services/auth_service.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -15,16 +16,37 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
+  final _authService = AuthService();
   bool _isLoading = false;
 
   Future<void> _register() async {
     if (_formKey.currentState!.validate()) {
       setState(() => _isLoading = true);
-      // Simulate API call
-      await Future.delayed(const Duration(seconds: 2));
+      
+      final success = await _authService.register(
+        _nameController.text, // Using name as username for now
+        _emailController.text,
+        _passwordController.text,
+      );
+
       if (mounted) {
         setState(() => _isLoading = false);
-        context.go('/home');
+        if (success) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Registration successful! Please login.'),
+              backgroundColor: Colors.green,
+            ),
+          );
+          context.go('/'); // Go to login screen
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Registration failed. Please try again.'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
       }
     }
   }
@@ -85,12 +107,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       TextFormField(
                         controller: _nameController,
                         decoration: const InputDecoration(
-                          labelText: 'Full Name',
+                          labelText: 'Username', // Changed to Username
                           prefixIcon: Icon(Icons.person_outline),
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'Please enter your name';
+                            return 'Please enter your username';
                           }
                           return null;
                         },
